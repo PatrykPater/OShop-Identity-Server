@@ -33,6 +33,10 @@ namespace OShop_Identity_Server
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                                        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), 
+                                                    b => b.MigrationsAssembly("AngularASPNETCore2WebApiAuth")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
