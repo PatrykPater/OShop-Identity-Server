@@ -10,7 +10,7 @@ namespace OShop_Identity_Server.Models
     {
         public int Id { get; set; }
         public string IdentityId { get; set; }
-        public AppUser Identity { get; set; }  // navigation property
+        public AppUser Identity { get; set; }
 
         
     }
