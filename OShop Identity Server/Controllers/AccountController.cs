@@ -13,35 +13,26 @@ using OShop_Identity_Server.Models;
 
 namespace OShop_Identity_Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IClientStore _clientStore;
-        private readonly IEventService _events;
 
-        public AccountController(SignInManager<AppUser> signInManager, 
-            UserManager<AppUser> userManager, 
-            IIdentityServerInteractionService interaction, 
-            IAuthenticationSchemeProvider schemeProvider, 
-            IClientStore clientStore, 
-            IEventService events)
+        public AccountController(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
-            _interaction = interaction;
-            _schemeProvider = schemeProvider;
-            _clientStore = clientStore;
-            _events = events;
-            _signInManager = signInManager;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            
+            return Ok();
         }
 
 
         [HttpPost]
-        [Route("api/[controller]")]
         public async Task<IActionResult> Register([FromBody]RegisterRequestViewModel model)
         {
             if (!ModelState.IsValid)

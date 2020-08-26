@@ -12,6 +12,8 @@ using OShop_Identity_Server.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OShop_Identity_Server.Infrastructure;
+using OShop_Identity_Server.Models;
 
 namespace OShop_Identity_Server
 {
@@ -27,16 +29,30 @@ namespace OShop_Identity_Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddRazorPages();
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                                        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), 
-                                                    b => b.MigrationsAssembly("AngularASPNETCore2WebApiAuth")));
+            services.AddIdentity<AppUser, IdentityRole>()
+              .AddEntityFrameworkStores<ApplicationDbContext>()
+              .AddDefaultTokenProviders();
+
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+               // this adds the operational data from DB (codes, tokens, consents)
+               .AddOperationalStore(options =>
+               {
+                   options.ConfigureDbContext = builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                   // this enables automatic token cleanup. this is optional.
+                   options.EnableTokenCleanup = true;
+                   options.TokenCleanupInterval = 30; // interval in seconds
+               })
+               .AddInMemoryIdentityResources(Config.GetIdentityResources())
+               .AddInMemoryApiResources(Config.GetApiResources())
+               .AddInMemoryClients(Config.GetClients())
+               .AddAspNetIdentity<AppUser>();
+
+
+            services.AddRazorPages();
+            services.RegisterCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,10 +77,13 @@ namespace OShop_Identity_Server
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseIdentityServer();
+
+            app.UseCors(CorsConfig.MyAllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }
