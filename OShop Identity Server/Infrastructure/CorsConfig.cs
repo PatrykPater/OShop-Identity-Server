@@ -1,8 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OShop_Identity_Server.Infrastructure
 {
@@ -20,7 +16,8 @@ namespace OShop_Identity_Server.Infrastructure
                                   {
                                       builder.WithOrigins(AngularOrigin)
                                              .AllowAnyHeader()
-                                             .AllowAnyMethod();
+                                             .AllowAnyMethod()
+                                             .AllowAnyOrigin();
                                   });
             });
         }

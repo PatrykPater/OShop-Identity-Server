@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OShop_Identity_Server.Infrastructure;
 using OShop_Identity_Server.Models;
+using Microsoft.AspNetCore.Mvc;
+using IdentityServer4.Services;
+using OShop_Identity_Server.Services;
 
 namespace OShop_Identity_Server
 {
@@ -50,9 +53,16 @@ namespace OShop_Identity_Server
                .AddInMemoryClients(Config.GetClients())
                .AddAspNetIdentity<AppUser>();
 
+            services.AddTransient<IProfileService, IdentityClaimsProfileService>();
 
-            services.AddRazorPages();
-            services.RegisterCors();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()));
+
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,20 +80,15 @@ namespace OShop_Identity_Server
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseCors("AllowAll");
             app.UseIdentityServer();
 
-            app.UseCors(CorsConfig.MyAllowSpecificOrigins);
-
-            app.UseEndpoints(endpoints =>
+            app.UseMvc(routes =>
             {
-                endpoints.MapControllers();
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

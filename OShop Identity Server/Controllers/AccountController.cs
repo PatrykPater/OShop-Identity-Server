@@ -18,8 +18,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OShop_Identity_Server.Controllers
 {
-    [Route("[controller]/[action]")]
-    [ApiController]
     public class AccountController : Controller
     {
         private readonly SignInManager<AppUser> _signInManager;
@@ -87,9 +85,9 @@ namespace OShop_Identity_Server.Controllers
         /// Handle postback from username/password login
         /// </summary>
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginInputModel model, string button)
+        public async Task<IActionResult> Login(LoginViewModel model, string button)
         {
+            //var button = "";
             // check if we are in the context of an authorization request
             var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
 
