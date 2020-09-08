@@ -56,10 +56,10 @@ namespace OShop_Identity_Server.Controllers
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("userName", user.UserName));
-            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("name", user.Name));
-            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("email", user.Email));
-            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("role", Roles.Consumer));
+            await _userManager.AddClaimAsync(user, new Claim("userName", user.UserName));
+            await _userManager.AddClaimAsync(user, new Claim("name", user.Name));
+            await _userManager.AddClaimAsync(user, new Claim("email", user.Email));
+            await _userManager.AddClaimAsync(user, new Claim("role", Roles.Consumer));
 
             return Ok(new RegisterResponseViewModel(user));
         }
@@ -140,16 +140,16 @@ namespace OShop_Identity_Server.Controllers
 
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, user.Email),
-                        new Claim("UserName", user.UserName),
-                        new Claim("UserID", user.Id),
+                        new Claim(ClaimTypes.Name, user.UserName),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
                         new Claim(ClaimTypes.Role, Roles.Consumer),
                     };
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var userIdentity = new ClaimsIdentity(claims);
 
                     // issue authentication cookie with subject ID and username
-                    await HttpContext.SignInAsync(user.Id, new ClaimsPrincipal(claimsIdentity), props);
+                    await HttpContext.SignInAsync(new ClaimsPrincipal(userIdentity), props);
 
                     if (context != null)
                     {
