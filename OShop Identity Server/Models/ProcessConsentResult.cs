@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using IdentityServer4.Models;
 
 namespace OShop_Identity_Server.Models
 {
@@ -9,7 +6,7 @@ namespace OShop_Identity_Server.Models
     {
         public bool IsRedirect => RedirectUri != null;
         public string RedirectUri { get; set; }
-        public string ClientId { get; set; }
+        public Client Client { get; set; }
 
         public bool ShowView => ViewModel != null;
         public ConsentViewModel ViewModel { get; set; }

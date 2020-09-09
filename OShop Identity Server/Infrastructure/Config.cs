@@ -49,8 +49,8 @@ namespace OShop_Identity_Server.Infrastructure
                     },
                     PostLogoutRedirectUris = 
                     {
-                        "https://localhost:4200/",
-                        "http://localhost:4200/",
+                        "https://localhost:44353",
+                        "http://localhost:44353",
                     },
                     AllowedCorsOrigins = 
                     {

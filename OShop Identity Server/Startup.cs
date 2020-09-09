@@ -82,7 +82,9 @@ namespace OShop_Identity_Server
 
             app.UseStaticFiles();
             app.UseCors("AllowAll");
+
             app.UseIdentityServer();
+            app.UseAuthorization();
 
             app.UseMvc(routes =>
             {
