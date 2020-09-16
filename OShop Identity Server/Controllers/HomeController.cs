@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace OShop_Identity_Server.Controllers
 {
     [SecurityHeaders]
-    [AllowAnonymous]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IIdentityServerInteractionService _interactionService;

@@ -37,10 +37,10 @@ namespace OShop_Identity_Server.Infrastructure
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowedScopes = 
                     { 
-                        "openid"
-                        //"profile", 
-                        //"email", 
-                        //"api.read" 
+                        "openid",
+                        "profile",
+                        "email",
+                        "api.read"
                     },
                     RedirectUris = 
                     {
@@ -50,12 +50,10 @@ namespace OShop_Identity_Server.Infrastructure
                     PostLogoutRedirectUris = 
                     {
                         "https://localhost:44353",
-                        "http://localhost:44353",
                     },
                     AllowedCorsOrigins = 
                     {
                         "https://localhost:4200",
-                        "http://localhost:4200"
                     },
                     AllowAccessTokensViaBrowser = true,
                     AccessTokenLifetime = 3600

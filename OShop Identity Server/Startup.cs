@@ -17,6 +17,8 @@ using OShop_Identity_Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using IdentityServer4.Services;
 using OShop_Identity_Server.Services;
+using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4;
 
 namespace OShop_Identity_Server
 {
@@ -35,29 +37,27 @@ namespace OShop_Identity_Server
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<AppUser, IdentityRole>()
-              .AddEntityFrameworkStores<ApplicationDbContext>()
-              .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-               // this adds the operational data from DB (codes, tokens, consents)
-               .AddOperationalStore(options =>
-               {
-                   options.ConfigureDbContext = builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-                   // this enables automatic token cleanup. this is optional.
-                   options.EnableTokenCleanup = true;
-                   options.TokenCleanupInterval = 30; // interval in seconds
-               })
-               .AddInMemoryIdentityResources(Config.GetIdentityResources())
-               .AddInMemoryApiResources(Config.GetApiResources())
-               .AddInMemoryClients(Config.GetClients())
-               .AddAspNetIdentity<AppUser>();
+                    .AddDeveloperSigningCredential()
+                    // this adds the operational data from DB (codes, tokens, consents)
+                    .AddOperationalStore(options =>
+                    {
+                        options.ConfigureDbContext = builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                        // this enables automatic token cleanup. this is optional.
+                        options.EnableTokenCleanup = true;
+                        options.TokenCleanupInterval = 30; // interval in seconds
+                    })
+                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                    .AddInMemoryApiResources(Config.GetApiResources())
+                    .AddInMemoryClients(Config.GetClients())
+                    .AddAspNetIdentity<AppUser>();
 
-            services.AddTransient<IProfileService, IdentityClaimsProfileService>();
+            //services.AddTransient<IProfileService, IdentityClaimsProfileService>();
 
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()));
+            services.RegisterCors();
 
             services.AddMvc(options =>
             {
@@ -80,11 +80,9 @@ namespace OShop_Identity_Server
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
-            app.UseCors("AllowAll");
+            app.UseCors(CorsConfig.MyAllowSpecificOrigins);
 
             app.UseIdentityServer();
-            app.UseAuthorization();
 
             app.UseMvc(routes =>
             {
@@ -92,6 +90,7 @@ namespace OShop_Identity_Server
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }

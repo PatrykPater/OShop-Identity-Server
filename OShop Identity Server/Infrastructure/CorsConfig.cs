@@ -5,7 +5,6 @@ namespace OShop_Identity_Server.Infrastructure
     public static class CorsConfig
     {
         public static string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-        public static string AngularOrigin = "http://localhost:4200";
 
         public static void RegisterCors(this IServiceCollection services)
         {
@@ -14,8 +13,7 @@ namespace OShop_Identity_Server.Infrastructure
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.WithOrigins(AngularOrigin)
-                                             .AllowAnyHeader()
+                                      builder.AllowAnyHeader()
                                              .AllowAnyMethod()
                                              .AllowAnyOrigin();
                                   });

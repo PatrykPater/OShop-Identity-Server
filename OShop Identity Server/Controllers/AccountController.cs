@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityModel;
+using System.Collections.Generic;
 
 namespace OShop_Identity_Server.Controllers
 {
@@ -57,11 +58,11 @@ namespace OShop_Identity_Server.Controllers
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            await _userManager.AddClaimAsync(user, new Claim("userName", user.UserName));
-            await _userManager.AddClaimAsync(user, new Claim("name", user.Name));
-            await _userManager.AddClaimAsync(user, new Claim("email", user.Email));
-            await _userManager.AddClaimAsync(user, new Claim("role", Roles.Consumer));
-
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, user.Id));
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.Name));
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.Consumer));
+            
             return Ok(new RegisterResponseViewModel(user));
         }
 
@@ -139,26 +140,23 @@ namespace OShop_Identity_Server.Controllers
                         };
                     };
 
-                    // issue authentication cookie with subject ID and username
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Name),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        new Claim(ClaimTypes.Role, Roles.Consumer),
+                    };
+
+                    //issue authentication cookie with subject ID and username
                     var isuser = new IdentityServerUser(user.Id)
                     {
-                        DisplayName = user.UserName
+                        DisplayName = user.UserName,
+                        AdditionalClaims = claims
                     };
 
                     await HttpContext.SignInAsync(isuser, props);
-
-                    //var claims = new List<Claim>
-                    //{
-                    //    new Claim(ClaimTypes.Name, user.Name),
-                    //    new Claim(ClaimTypes.Email, user.Email),
-                    //    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    //    new Claim(ClaimTypes.Role, Roles.Consumer),
-                    //};
-
-                    //var userIdentity = new ClaimsIdentity(claims);
-
-                    //// issue authentication cookie with subject ID and username
-                    //await HttpContext.SignInAsync(new ClaimsPrincipal(userIdentity), props);
 
                     if (context != null)
                     {
